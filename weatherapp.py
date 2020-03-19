@@ -1,6 +1,6 @@
 ﻿import requests
 import matplotlib.pyplot as plt
-
+from pprint import pprint
 # Lista dat bez roku, godzin, minut
 new_data_list = []
 
@@ -32,7 +32,7 @@ def weather_plots_creator ():
 
         r = requests.get(web_adress, params={'q': '{0},pl'.format(city_name), "appid" : KEY,"units" : "metric" #parametry params są dodawane do web_adress, parammetry są parami klucz : wartosć, klucz : wartość
                                              }) #"&units=metric" dodanie tego parametru do zapytania get powoduje ze dostajemy z API odpowiedź z temperaturą w C
-
+        pprint(r.json())
         # Od razu po wysłaniu zapytania do api sprawdzam status code odpowiedzi z serwera, jeśli nie jest równa 200 wyskakuje komunikat o błedzie, program obsługuję ten wyjątek
         if r.status_code != 200:
             raise NotValidResponse()
@@ -42,7 +42,7 @@ def weather_plots_creator ():
         #Lista ciśnienia
         pressure_list = []
         for record in r.json()["list"]:
-           pressure_list.append(record["main"]["pressure"])
+            pressure_list.append(record["main"]["pressure"])
 
         #lista temperatur
         temperature_list = []
@@ -61,11 +61,11 @@ def weather_plots_creator ():
         dt_text_list = []
         for record in r.json()["list"]:#używamy record który oznacza każdy element listy "list", nie musimy teraz podawać numerów indeksu listy "list"
             dt_text_list.append(record['dt_txt'])#dodajemy do listy "dt_text_list" wartości kluczy "dt_txt", record oznacza poszczególne indeksy listy "list"
+
         dt_text_list_every_6_hours = []
         dt_text_list_every_second_reading = dt_text_list[1::2]
 
         date_list_x_line = changeDateLength(dt_text_list_every_second_reading)
-
         #Wykres daty od temperatury (co drugi wynik został usunięty z wykresu)
         plot_weather(dt_text_list,temperature_list,"temperatura", "C", date_list_x_line)
 
@@ -82,4 +82,7 @@ def weather_plots_creator ():
     except Exception as e:
         print ("wystąpił błąd: ", type(e), e)#gdy pojawi się jakiś błąd użytkownić nie potrzebuje informacji o linii błędu, co jest nie tak w kodzie, lepiej mu dostarczyć informacje żeby skontaktował się z developerem bo jest nie tak w kodzieĆ
 
+
 weather_plots_creator()
+
+
